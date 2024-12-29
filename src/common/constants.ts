@@ -4,3 +4,12 @@ export const Server = {
 } as const;
 
 export const ServerAddress = `http://${Server.ip}:${Server.port}`;
+
+export enum ServerRoutes {
+  addToIndex = "/add-to-index",
+  removeFromIndex = "/remove-from-index",
+  filesWithAnyWord = "/files-any-word",
+  filesWithAllWords = "/files-all-words",
+  reindex = "/reindex",
+  getAllIndexed = "/get-all-indexed",
+}

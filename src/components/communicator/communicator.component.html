@@ -1,3 +1,20 @@
-<div class="container">
-  <button (click)="sendRequest()">send request</button>
+<div class="container column">
+  <textarea type="text" id="inputField" name="inputField" [(ngModel)]="inputField"></textarea>
+  <div class="buttons-container row">
+    <button class="stretch-y-to-parent" (click)="findFilesWithAnyOfTheWord()">Any words</button>
+    <button class="stretch-y-to-parent" (click)="findFilesWithAllWords()">All words</button>
+    <div class="divider"></div>
+    <button class="stretch-y-to-parent" (click)="addToIndexRequest()">Add to index</button>
+    <button class="stretch-y-to-parent" (click)="removeFromIndexRequest()">Remove from index</button>
+    <div class="divider"></div>
+    <button class="stretch-y-to-parent" (click)="reindex()">Reindex</button>
+    <button class="stretch-y-to-parent" (click)="getAllIndexed()">All indexed paths</button>
+  </div>
+  <div style="text-align: center">
+    <h2>Server response</h2>
+  </div>
+  <div class="error-msg" *ngIf="errorMessage.length > 0">
+    * {{ errorMessage }}
+  </div>
+  <div class="response-pane">{{ resultField }}</div>
 </div>

@@ -60,3 +60,13 @@ p {
   margin: 0;
   color: var(--gray-700);
 }
+
+button {
+  height: fit-content;
+  width: fit-content;
+
+  padding: 0.5em;
+  font-size: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
