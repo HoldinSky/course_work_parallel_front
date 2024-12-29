@@ -1,7 +1,7 @@
 <div class="container column">
   <textarea type="text" id="inputField" name="inputField" [(ngModel)]="inputField"></textarea>
   <div class="buttons-container row">
-    <button class="stretch-y-to-parent" (click)="findFilesWithAnyOfTheWord()">Any words</button>
+    <button class="stretch-y-to-parent" (click)="findFilesWithAnyOfTheWord()">Any word</button>
     <button class="stretch-y-to-parent" (click)="findFilesWithAllWords()">All words</button>
     <div class="divider"></div>
     <button class="stretch-y-to-parent" (click)="addToIndexRequest()">Add to index</button>
@@ -13,8 +13,5 @@
   <div style="text-align: center">
     <h2>Server response</h2>
   </div>
-  <div class="error-msg" *ngIf="errorMessage.length > 0">
-    * {{ errorMessage }}
-  </div>
-  <div class="response-pane">{{ resultField }}</div>
+  <div class="response-pane{{isError ? ' error-msg' : ''}}">{{ resultField }}</div>
 </div>

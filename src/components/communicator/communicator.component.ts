@@ -1,31 +1,27 @@
 import {Component} from "@angular/core";
 import {ServerAddress, ServerRoutes} from "../../common/constants";
 import {FormsModule} from "@angular/forms";
-import {NgIf} from "@angular/common";
 
 @Component({
   selector: "server-communicator",
-  imports: [FormsModule, NgIf],
+  imports: [FormsModule],
   templateUrl: "./communicator.component.html",
   styleUrls: ["./communicator.component.css"],
 })
 export class Communicator {
   inputField: string = "";
   resultField: string = "";
-  errorMessage: string = "";
+  isError: boolean = false;
 
   async processServerResponse(response: Response) {
     const body = (await response.text() as string).trim();
 
-    if (!response.ok) {
-      this.errorMessage = body;
-    } else {
-      this.resultField = body;
-    }
+    this.isError = !response.ok;
+    this.resultField = body;
   }
 
   async findFilesWithAnyOfTheWord() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.filesWithAnyWord, {
       method: "POST",
       body: this.inputField,
@@ -35,7 +31,7 @@ export class Communicator {
   }
 
   async findFilesWithAllWords() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.filesWithAllWords, {
       method: "POST",
       body: this.inputField,
@@ -45,27 +41,33 @@ export class Communicator {
   }
 
   async addToIndexRequest() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.addToIndex, {
       method: "POST",
       body: this.inputField
     });
 
     await this.processServerResponse(response);
+    if (!this.isError) {
+      this.resultField = "Success";
+    }
   }
 
   async removeFromIndexRequest() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.removeFromIndex, {
       method: "POST",
       body: this.inputField
     });
 
     await this.processServerResponse(response);
+    if (!this.isError) {
+      this.resultField = "Success";
+    }
   }
 
   async reindex() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.reindex, {
       method: "POST",
       body: this.inputField
@@ -75,7 +77,7 @@ export class Communicator {
   }
 
   async getAllIndexed() {
-    this.errorMessage = "";
+    this.isError = false;
     const response = await fetch(ServerAddress + ServerRoutes.getAllIndexed, {
       method: "GET",
     });
