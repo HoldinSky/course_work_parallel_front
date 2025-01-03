@@ -1,6 +1,7 @@
-import {Component} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ServerAddress, ServerRoutes} from "../../common/constants";
 import {FormsModule} from "@angular/forms";
+import {interval, Subscription} from "rxjs";
 
 @Component({
   selector: "server-communicator",
@@ -8,12 +9,32 @@ import {FormsModule} from "@angular/forms";
   templateUrl: "./communicator.component.html",
   styleUrls: ["./communicator.component.css"],
 })
-export class Communicator {
+export class Communicator implements OnInit, OnDestroy {
   inputField: string = "";
   resultField: string = "";
   isError: boolean = false;
 
-  async processServerResponse(response: Response) {
+  private readonly testBody: string = "I am sorry";
+  private readonly testPath: string = ServerAddress + ServerRoutes.filesWithAllWords;
+  private testIntervalId?: any = 0;
+
+  private previouslyProcessedRequests: number = 0;
+  processedRequests: number = 0;
+  requestsPerSecond: number = 0;
+
+  private millisElapsed = 0;
+  private timerSubscription?: Subscription;
+  private statsSubscription?: Subscription;
+  formattedTime = "0.000";
+
+  ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    this.stopTimer();
+  }
+
+  private async processServerResponse(response: Response) {
     const body = (await response.text() as string).trim();
 
     this.isError = !response.ok;
@@ -83,5 +104,69 @@ export class Communicator {
     });
 
     await this.processServerResponse(response);
+  }
+
+  startPerformanceTest() {
+    if (this.testIntervalId) {
+      return;
+    }
+
+    this.testIntervalId = setInterval(async () => {
+      const resp = await fetch(this.testPath, {
+        method: "POST",
+        body: this.testBody,
+      });
+
+      if (resp.ok) {
+        this.processedRequests++;
+      }
+    }, 10);
+
+    this.startTimer();
+  }
+
+  stopPerformanceTest() {
+    clearInterval(this.testIntervalId);
+    this.testIntervalId = undefined;
+
+    this.stopTimer();
+  }
+
+  private startTimer(): void {
+    if (!this.timerSubscription) {
+      const startTimestamp = Date.now() - this.millisElapsed;
+
+      this.timerSubscription = interval(50).subscribe(() => {
+        this.millisElapsed = Date.now() - startTimestamp;
+        this.updateFormattedTime();
+      });
+    }
+    if (!this.statsSubscription) {
+      this.statsSubscription = interval(1000).subscribe(() => {
+        this.requestsPerSecond = this.processedRequests - this.previouslyProcessedRequests;
+        this.previouslyProcessedRequests = this.processedRequests;
+      })
+    }
+  }
+
+  private updateFormattedTime(): void {
+    const seconds = Math.floor(this.millisElapsed / 1000);
+    const milliseconds = this.millisElapsed % 1000;
+    this.formattedTime = `${seconds}.${milliseconds.toString().padStart(3, '0')}`;
+  }
+
+  private stopTimer(): void {
+    this.timerSubscription?.unsubscribe();
+    this.statsSubscription?.unsubscribe();
+    this.timerSubscription = undefined;
+    this.statsSubscription = undefined;
+  }
+
+  reset(): void {
+    this.stopTimer();
+    this.millisElapsed = 0;
+    this.processedRequests = 0;
+    this.requestsPerSecond = 0;
+    this.updateFormattedTime();
   }
 }

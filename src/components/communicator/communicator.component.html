@@ -1,6 +1,7 @@
 <div class="container column">
   <textarea type="text" id="inputField" name="inputField" [(ngModel)]="inputField"></textarea>
-  <div class="buttons-container row">
+
+  <div class="buttons-container row space-between">
     <button class="stretch-y-to-parent" (click)="findFilesWithAnyOfTheWord()">Any word</button>
     <button class="stretch-y-to-parent" (click)="findFilesWithAllWords()">All words</button>
     <div class="divider"></div>
@@ -10,6 +11,22 @@
     <button class="stretch-y-to-parent" (click)="reindex()">Reindex</button>
     <button class="stretch-y-to-parent" (click)="getAllIndexed()">All indexed paths</button>
   </div>
+
+  <div class="perf-test-section">
+    <h3>Performance Test</h3>
+    <div>
+      <p>Elapsed: {{ formattedTime }} sec</p>
+      <p>Requests processed: {{ processedRequests }}</p>
+      <p>Requests per second: {{ requestsPerSecond }}</p>
+    </div>
+
+    <div class="buttons-container row centered">
+      <button class="stretch-y-to-parent" (click)="startPerformanceTest()">Start</button>
+      <button class="stretch-y-to-parent" (click)="stopPerformanceTest()">Stop</button>
+      <button class="stretch-y-to-parent" (click)="reset()">Reset</button>
+    </div>
+  </div>
+
   <div style="text-align: center">
     <h2>Server response</h2>
   </div>
